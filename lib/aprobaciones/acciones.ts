@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { adminClient } from "@/lib/supabase/admin";
 
 // Acciones importantes que requieren aprobación desde otro dispositivo
 export const ACCIONES = {
@@ -19,7 +20,10 @@ export async function describir(supabase: SupabaseClient, accion: Accion, d: Rec
     case "eliminar_servicio": return `Eliminar el servicio "${await servicio()}" y todos sus datos`;
     case "eliminar_avatar": return `Eliminar el avatar de "${await servicio()}" y su historial`;
     case "regenerar_avatar": return `Regenerar desde cero el avatar de "${await servicio()}"`;
-    case "publicar_encuesta": return "Publicar la encuesta pública";
+    case "publicar_encuesta": {
+      const { data } = await supabase.from("encuestas").select("servicios(nombre)").eq("id", d.encuestaId as string).single();
+      return `Publicar la encuesta pública de "${(data?.servicios as unknown as { nombre: string } | null)?.nombre ?? "servicio"}"`;
+    }
     case "cambiar_configuracion": return `Cambiar configuración: modelo ${d.modelo_ia === "opus" ? "Opus (máxima calidad)" : "Sonnet (más económico)"}, reanálisis cada ${d.reanalisis_cada} respuestas`;
   }
 }
@@ -44,7 +48,9 @@ export async function ejecutar(supabase: SupabaseClient, userId: string, accion:
       return "Configuración actualizada.";
     }
     case "publicar_encuesta": {
-      const { error } = await supabase.from("encuestas").update({ publicada: true, publicada_at: new Date().toISOString() }).eq("id", d.encuestaId as string);
+      // Solo el servidor puede publicar (la base lo bloquea para el usuario logueado)
+      const { error } = await adminClient().from("encuestas").update({ publicada: true, publicada_at: new Date().toISOString() })
+        .eq("id", d.encuestaId as string).eq("user_id", userId);
       if (error) throw error;
       return "Encuesta publicada.";
     }

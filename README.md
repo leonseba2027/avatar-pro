@@ -2,7 +2,7 @@
 
 App web (PWA) para construir el **avatar de cliente ideal** de cada servicio que ofrecés. Funciona en celular y computadora y se puede instalar como app.
 
-> **Estado:** Etapa 1 (login y servicios) ✅ · Etapa 2 (generación de avatares) ✅ · Etapa 3 (gráficos y visualización) ✅ · Etapa 4 (sincronización y permisos) ✅
+> **Estado:** Etapa 1 (login y servicios) ✅ · Etapa 2 (generación de avatares) ✅ · Etapa 3 (gráficos y visualización) ✅ · Etapa 4 (sincronización y permisos) ✅ · Etapa 5 (encuesta y notificaciones) ✅
 
 ---
 
@@ -179,6 +179,61 @@ El email incluido en Supabase permite **muy pocos envíos por hora** y es solo p
   - La aprobación siempre tiene que venir de *otra* sesión, nunca de la misma que la pidió.
 - **Dispositivos** (Configuración → Dispositivos conectados): cada inicio de sesión es un dispositivo. **Desconectar** cierra esa sesión al instante y la obliga a volver a ingresar.
 - **Historial:** todas las solicitudes quedan en Configuración → Historial de aprobaciones, y también en el registro de actividad.
+
+---
+
+## Etapa 5 — Encuesta pública y notificaciones
+
+### 5.1 Tablas nuevas
+**SQL Editor → New query** → pegá todo `supabase/migrations/0004_encuestas_notificaciones.sql` → **Run**.
+
+### 5.2 Clave de servicio de Supabase (secreta)
+Hace falta para recibir respuestas de personas sin cuenta y para enviar avisos.
+
+1. En Supabase: **Project Settings → API → service_role** → **Reveal** → copiala.
+2. En Vercel: **Settings → Environment Variables** → `SUPABASE_SERVICE_ROLE_KEY` = esa clave.
+
+⚠️ Esta clave saltea toda la seguridad de la base. Nunca la pongas con `NEXT_PUBLIC_`, nunca la pegues en el chat y nunca la subas a GitHub.
+
+### 5.3 Claves para notificaciones (VAPID)
+Son un par de claves que identifican a tu app ante los servicios de notificaciones.
+
+1. Generalas, en tu computadora (con Node.js instalado) o en <https://vapidkeys.com>:
+
+   ```bash
+   npx web-push generate-vapid-keys
+   ```
+
+2. En Vercel cargá:
+
+   | Name | Value |
+   |---|---|
+   | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | la "Public Key" |
+   | `VAPID_PRIVATE_KEY` | la "Private Key" (secreta) |
+   | `VAPID_SUBJECT` | `mailto:` + tu email (ej.: `mailto:hola@tudominio.com`) |
+
+3. **Redeploy.**
+
+### 5.4 CAPTCHA para la encuesta (opcional, recomendado al vender)
+1. Entrá a <https://dash.cloudflare.com> → **Turnstile** → **Add widget** → dominio de tu app.
+2. Copiá las dos claves a Vercel: `NEXT_PUBLIC_TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY`.
+
+Sin CAPTCHA igual hay dos frenos contra spam: un campo trampa para robots y un máximo de 3 respuestas por persona por día (con una huella anónima, sin guardar la IP).
+
+### 5.5 Borrado automático de respuestas viejas (12 meses)
+En Supabase: **Integrations → Cron → Create job**:
+
+- **Name:** `purgar-respuestas`
+- **Schedule:** `0 4 * * *` (todos los días a las 4)
+- **Type:** SQL Snippet → `select public.purgar_respuestas_viejas();`
+
+### 5.6 Cómo funciona
+- **Encuesta:** en cada avatar, la pestaña **Encuesta** permite crearla (viene con preguntas sugeridas), editarla y **publicarla**. Publicar requiere aprobación.
+- **Compartir:** cuando está publicada, copiás el link, lo compartís o descargás el **QR**.
+- **Respuestas:** son anónimas, se anonimizan antes de guardarse y se suman como datos del avatar.
+- **Reanálisis automático:** cada N respuestas (5 por defecto; se cambia en Configuración) el avatar se actualiza solo.
+- **Avisos:** en Configuración → Avisos se activan por dispositivo y se elige cada tipo: permisos pendientes, respuestas de encuesta, avatar actualizado y pocos datos. La primera vez, el inicio muestra una explicación antes de pedir el permiso del navegador.
+- **iPhone:** las notificaciones funcionan solo si la app está **agregada a la pantalla de inicio** (iOS 16.4 o superior).
 
 ---
 

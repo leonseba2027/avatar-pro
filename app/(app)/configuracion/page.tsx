@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ChevronRight, ShieldCheck, Smartphone } from "lucide-react";
 import { TemaToggle } from "@/components/TemaToggle";
 import { PreferenciasIA } from "./PreferenciasIA";
+import { Avisos } from "./Avisos";
 
 export const metadata = { title: "Configuración" };
 
@@ -18,6 +19,10 @@ export default async function Configuracion() {
       <section className="tarjeta space-y-3" aria-labelledby="t-apariencia">
         <h2 id="t-apariencia" className="text-xl font-semibold">Apariencia</h2>
         <TemaToggle />
+      </section>
+      <section className="tarjeta" aria-labelledby="t-avisos">
+        <h2 id="t-avisos" className="mb-3 text-xl font-semibold">Avisos</h2>
+        <Avisos prefs={{ avatar: true, encuesta: true, aprobacion: true, pocos_datos: true, ...(perfil?.notif ?? {}) }} />
       </section>
       <section className="tarjeta" aria-labelledby="t-seg">
         <h2 id="t-seg" className="mb-2 text-xl font-semibold">Seguridad</h2>

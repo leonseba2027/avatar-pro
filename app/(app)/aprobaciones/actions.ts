@@ -5,6 +5,7 @@ import { createClient as clienteTemporal } from "@supabase/supabase-js";
 import { sesionActual, describirDispositivo } from "@/lib/dispositivos";
 import { ACCIONES, describir, ejecutar, esAccion } from "@/lib/aprobaciones/acciones";
 import { registrar } from "@/lib/auditoria";
+import { notificar } from "@/lib/push";
 
 const ACTIVO_DIAS = 30;
 
@@ -52,7 +53,10 @@ export async function solicitarAprobacion(accion: string, detalle: unknown): Pro
   if (error || !ap) return { ok: false, error: "No se pudo crear la solicitud." };
   await registrar(supabase, userId, "aprobacion.solicitada", { id: ap.id, accion });
 
-  if (otros && otros.length > 0) return { ok: true, id: ap.id, modo: "dispositivo", otros: otros.map((o) => o.nombre) };
+  if (otros && otros.length > 0) {
+    await notificar(userId, "aprobacion", { titulo: "Permiso pendiente", cuerpo: `${descripcion}. Tocá para aprobar o rechazar.`, url: "/inicio" }, { excluirSession: sessionId });
+    return { ok: true, id: ap.id, modo: "dispositivo", otros: otros.map((o) => o.nombre) };
+  }
 
   // Sin otro dispositivo: se confirma con un código enviado por email
   if (!email) return { ok: false, error: "Tu cuenta no tiene email para enviar el código." };

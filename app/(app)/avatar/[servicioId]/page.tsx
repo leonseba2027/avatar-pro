@@ -9,10 +9,11 @@ import type { DatosAvatar } from "@/lib/avatar/esquema";
 import { BotonGenerar } from "./BotonGenerar";
 import { Alimentar } from "./Alimentar";
 import { Historial } from "./Historial";
+import { Encuesta } from "./Encuesta";
 import { Demograficos } from "@/components/avatar/Demograficos";
 import { MundoInterno } from "@/components/avatar/MundoInterno";
 
-const TABS = [{ id: "demograficos", nombre: "Datos demográficos" }, { id: "mundo", nombre: "Mundo interno" }, { id: "alimentar", nombre: "Alimentar" }, { id: "historial", nombre: "Historial" }] as const;
+const TABS = [{ id: "demograficos", nombre: "Datos demográficos" }, { id: "mundo", nombre: "Mundo interno" }, { id: "alimentar", nombre: "Alimentar" }, { id: "encuesta", nombre: "Encuesta" }, { id: "historial", nombre: "Historial" }] as const;
 
 export default async function PaginaAvatar({ params, searchParams }: { params: Promise<{ servicioId: string }>; searchParams: Promise<{ tab?: string }> }) {
   const { servicioId } = await params;
@@ -28,6 +29,15 @@ export default async function PaginaAvatar({ params, searchParams }: { params: P
   const { data: versiones } = avatar
     ? await supabase.from("avatar_versiones").select("version, cambios, confianza, fuentes_analizadas, motivo, creado_at").eq("avatar_id", avatar.id).order("version", { ascending: false })
     : { data: [] };
+  const { data: encuesta } = tab === "encuesta"
+    ? await supabase.from("encuestas").select("id, slug, titulo, introduccion, preguntas, incluir_demografia, publicada, respuestas_sin_analizar").eq("servicio_id", servicioId).maybeSingle()
+    : { data: null };
+  const [{ data: respuestas, count: totalResp }, { data: perfil }] = tab === "encuesta" && encuesta
+    ? await Promise.all([
+        supabase.from("respuestas_encuesta").select("id, fuente_id, creado_at, respuestas", { count: "exact" }).eq("encuesta_id", encuesta.id).order("creado_at", { ascending: false }).limit(20),
+        supabase.from("perfiles").select("reanalisis_cada").single(),
+      ])
+    : [{ data: [], count: 0 }, { data: null }];
   const nuevos = (fuentes ?? []).filter((f) => f.usada_en_version === null).length;
   const conf = avatar ? etiquetaConfianza(avatar.confianza) : null;
 
@@ -72,7 +82,8 @@ export default async function PaginaAvatar({ params, searchParams }: { params: P
         ))}
       </nav>
 
-      {tab === "alimentar" ? <Alimentar servicioId={servicioId} fuentes={fuentes ?? []} />
+      {tab === "encuesta" ? <Encuesta servicioId={servicioId} encuesta={encuesta as never} respuestas={(respuestas ?? []) as never} total={totalResp ?? 0} umbral={perfil?.reanalisis_cada ?? 5} />
+        : tab === "alimentar" ? <Alimentar servicioId={servicioId} fuentes={fuentes ?? []} />
         : tab === "historial" ? <Historial servicioId={servicioId} versiones={(versiones ?? []) as never} actual={avatar?.version_actual ?? 0} />
         : avatar && tab === "mundo" ? <MundoInterno d={avatar.datos as DatosAvatar} color={servicio.color} />
         : avatar ? <Demograficos d={avatar.datos as DatosAvatar} color={servicio.color} confianza={avatar.confianza} />

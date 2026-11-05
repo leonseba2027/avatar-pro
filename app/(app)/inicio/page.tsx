@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { resumenAvatar } from "@/lib/avatar/resumen";
 import type { DatosAvatar } from "@/lib/avatar/esquema";
 import { ListaAvatares, type ItemInicio } from "./ListaAvatares";
+import { InvitacionAvisos } from "@/components/avisos/InvitacionAvisos";
 
 export const metadata = { title: "Inicio" };
 
@@ -41,6 +42,7 @@ export default async function Inicio() {
         </div>
         {conAvatar >= 2 && <Link href="/comparar" className="boton-secundario"><Columns3 size={20} aria-hidden="true" /> Comparar</Link>}
       </div>
+      <InvitacionAvisos />
       <ListaAvatares items={items} />
     </div>
   );
