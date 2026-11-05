@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-fondo: var(--fondo);
+  --color-tarjeta: var(--tarjeta);
+  --color-texto: var(--texto);
+  --color-tenue: var(--tenue);
+  --color-borde: var(--borde);
+  --color-suave: var(--suave);
+  --color-primario: var(--primario);
+  --color-peligro: var(--peligro);
+  --color-exito: var(--exito);
+}
+
+:root {
+  --fondo: #f6f7fb;
+  --tarjeta: #ffffff;
+  --texto: #111827;
+  --tenue: #4b5563;      /* 7.5:1 sobre blanco */
+  --borde: #d1d5db;
+  --suave: #eef0f6;
+  --primario: #4338ca;   /* 7.4:1 sobre blanco */
+  --peligro: #b91c1c;
+  --exito: #047857;
+  color-scheme: light;
+}
+.dark {
+  --fondo: #0b1020;
+  --tarjeta: #151b2e;
+  --texto: #f3f4f6;
+  --tenue: #b6bccb;
+  --borde: #2c3550;
+  --suave: #1e2640;
+  --primario: #818cf8;
+  --peligro: #f87171;
+  --exito: #34d399;
+  color-scheme: dark;
+}
+
+html { font-size: 112.5%; } /* base 18px: tipografía grande y legible */
+body { background: var(--fondo); color: var(--texto); font-family: var(--font-sans); }
+
+/* Foco siempre visible (WCAG 2.4.7) */
+:focus-visible { outline: 3px solid var(--primario); outline-offset: 2px; border-radius: 6px; }
+
+@utility campo {
+  @apply w-full rounded-xl border border-borde bg-tarjeta px-4 py-3 text-base text-texto placeholder:text-tenue;
+}
+@utility boton {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold transition disabled:opacity-50;
+}
+@utility boton-primario {
+  @apply boton bg-primario text-white hover:brightness-110 dark:text-gray-900;
+}
+@utility boton-secundario {
+  @apply boton border border-borde bg-tarjeta hover:bg-suave;
+}
+@utility tarjeta {
+  @apply rounded-2xl border border-borde bg-tarjeta p-5 shadow-sm;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
