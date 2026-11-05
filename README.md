@@ -2,7 +2,7 @@
 
 App web (PWA) para construir el **avatar de cliente ideal** de cada servicio que ofrecés. Funciona en celular y computadora y se puede instalar como app.
 
-> **Estado:** Etapa 1 de 6 (login y servicios) ✅
+> **Estado:** Etapa 1 (login y servicios) ✅ · Etapa 2 (generación de avatares) ✅
 
 ---
 
@@ -101,6 +101,34 @@ Vercel ya da HTTPS automáticamente.
    - **URI de redireccionamiento autorizados:** `https://TU-PROYECTO.supabase.co/auth/v1/callback`
 4. Copiá el *ID de cliente* y el *Secreto*.
 5. En Supabase: **Authentication → Sign In / Providers → Google** → activalo y pegá los dos datos.
+
+---
+
+## Paso 5 — Etapa 2: activar la inteligencia artificial
+
+### 5.a Tablas nuevas en Supabase
+**SQL Editor → New query** → pegá todo `supabase/migrations/0002_avatares.sql` → **Run**.
+
+### 5.b Clave de Anthropic
+1. Entrá a <https://console.anthropic.com> y creá una cuenta.
+2. **Billing** → cargá crédito (con USD 5–10 alcanza para muchas pruebas).
+3. **API Keys → Create Key** → nombre `avatar-pro` → copiala (empieza con `sk-ant-`). Se muestra una sola vez.
+4. En **Vercel → tu proyecto → Settings → Environment Variables** agregá:
+   - `ANTHROPIC_API_KEY` = la clave
+   - (opcional) `CLAUDE_MODEL` = `claude-sonnet-5-5` si querés gastar menos
+5. **Deployments → ⋯ → Redeploy.**
+
+⚠️ La clave va **solo** en Vercel. No la pegues en el chat, en el código ni en GitHub.
+
+### 5.c Costos aproximados
+Cada análisis usa el texto cargado más el avatar actual. Con el modelo por defecto (Claude Opus 5.5), un análisis típico cuesta entre USD 0,05 y 0,30. Hay un límite de 20 análisis por usuario por día (`LIMITE_GENERACIONES_DIA`).
+
+### 5.d Cómo funciona
+1. Cargás datos (texto pegado o .txt / .csv / .pdf) en **Avatar → Alimentar**.
+2. Antes de guardar se quitan emails, teléfonos, DNI, CUIT, usuarios y enlaces, y se descartan frases con datos sensibles.
+3. **Actualizar avatar** envía a Claude solo los datos nuevos más el avatar actual. **Regenerar desde cero** usa todos los datos.
+4. Cada análisis crea una versión nueva con la lista de cambios. Desde **Historial** podés restaurar cualquier versión anterior.
+5. El **nivel de confianza** (0–100) se calcula con la cantidad de datos, el volumen de texto, la variedad de tipos y lo recientes que son.
 
 ---
 
