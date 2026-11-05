@@ -4,6 +4,7 @@ import { ChevronRight, ShieldCheck, Smartphone } from "lucide-react";
 import { TemaToggle } from "@/components/TemaToggle";
 import { PreferenciasIA } from "./PreferenciasIA";
 import { Avisos } from "./Avisos";
+import { MisDatos } from "./MisDatos";
 
 export const metadata = { title: "Configuración" };
 
@@ -50,7 +51,10 @@ export default async function Configuracion() {
           <li>Comunicaciones por email: {f(perfil?.acepto_comunicaciones_at)}</li>
           <li className="text-tenue">Versión de textos: {perfil?.version_textos_legales ?? "—"}</li>
         </ul>
-        <p className="text-sm text-tenue">Descargar mis datos y eliminar mi cuenta: disponibles en la Etapa 6.</p>
+      </section>
+      <section className="tarjeta space-y-3" aria-labelledby="t-datos">
+        <h2 id="t-datos" className="text-xl font-semibold">Mis datos y mi cuenta</h2>
+        <MisDatos comunicaciones={!!perfil?.acepto_comunicaciones_at} />
       </section>
     </div>
   );

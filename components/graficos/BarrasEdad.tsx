@@ -9,7 +9,7 @@ export function BarrasEdad({ datos, color, alto = 200 }: { datos: { rango: strin
   return (
     <div style={{ height: alto }} aria-hidden="true">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={datos} margin={{ top: 24, right: 4, left: -24, bottom: 0 }}>
+        <BarChart accessibilityLayer={false} data={datos} margin={{ top: 24, right: 4, left: -24, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke={t.grilla} />
           <XAxis dataKey="rango" tick={{ fill: t.secundaria, fontSize: 13 }} tickLine={false} axisLine={{ stroke: t.base }} />
           <YAxis tick={{ fill: t.secundaria, fontSize: 12 }} tickLine={false} axisLine={false} unit="%" domain={[0, Math.max(10, Math.ceil(max / 10) * 10)]} />

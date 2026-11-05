@@ -2,7 +2,7 @@
 
 App web (PWA) para construir el **avatar de cliente ideal** de cada servicio que ofrecés. Funciona en celular y computadora y se puede instalar como app.
 
-> **Estado:** Etapa 1 (login y servicios) ✅ · Etapa 2 (generación de avatares) ✅ · Etapa 3 (gráficos y visualización) ✅ · Etapa 4 (sincronización y permisos) ✅ · Etapa 5 (encuesta y notificaciones) ✅
+> **Estado:** Etapa 1 (login y servicios) ✅ · Etapa 2 (generación de avatares) ✅ · Etapa 3 (gráficos y visualización) ✅ · Etapa 4 (sincronización y permisos) ✅ · Etapa 5 (encuesta y notificaciones) ✅ · Etapa 6 (cumplimiento legal) ✅
 
 ---
 
@@ -234,6 +234,60 @@ En Supabase: **Integrations → Cron → Create job**:
 - **Reanálisis automático:** cada N respuestas (5 por defecto; se cambia en Configuración) el avatar se actualiza solo.
 - **Avisos:** en Configuración → Avisos se activan por dispositivo y se elige cada tipo: permisos pendientes, respuestas de encuesta, avatar actualizado y pocos datos. La primera vez, el inicio muestra una explicación antes de pedir el permiso del navegador.
 - **iPhone:** las notificaciones funcionan solo si la app está **agregada a la pantalla de inicio** (iOS 16.4 o superior).
+
+---
+
+## Etapa 6 — Cumplimiento legal
+
+📋 **Leé primero `CHECKLIST-CUMPLIMIENTO.md`**: dice qué está implementado y qué te toca hacer a vos.
+
+### 6.1 Tablas nuevas
+**SQL Editor** → pegá `supabase/migrations/0005_cumplimiento.sql` → **Run**.
+
+### 6.2 Tus datos de titular
+Abrí `lib/legal.ts` y reemplazá cada `[COMPLETAR…]`:
+
+- nombre o razón social;
+- CUIT;
+- domicilio;
+- email de contacto;
+- fecha de publicación de los textos.
+
+Después cargá tus planes en `lib/precios.ts`.
+
+### 6.3 Textos legales (para tu abogado)
+Están en la carpeta `legales/` como archivos de texto (Markdown) que se pueden editar directamente:
+
+| Archivo | Se ve en |
+|---|---|
+| `politica-de-privacidad.md` | `/privacidad` |
+| `terminos-y-condiciones.md` | `/terminos` |
+| `consentimiento-encuesta.md` | Texto de referencia de la encuesta |
+| `aviso-de-cookies.md` | `/cookies` y el aviso emergente |
+| `boton-de-arrepentimiento.md` | `/arrepentimiento` |
+| `declaracion-de-accesibilidad.md` | `/accesibilidad` |
+| `plan-de-respuesta-a-incidentes.md` | Uso interno |
+| `inscripcion-registro-bases-de-datos.md` | Guía para la AAIP |
+
+Cuando cambies Términos o Privacidad, subí la versión en `lib/legal.ts` (`VERSION_TEXTOS_LEGALES`): todos los usuarios vuelven a aceptarlos.
+
+### 6.4 Panel de trámites
+En Vercel agregá `ADMIN_EMAILS` = tu email (si son varios, separados por coma). Entrá a `/admin/tramites` para ver los arrepentimientos y las bajas, y marcarlos como resueltos.
+
+### 6.5 Tarea diaria de mantenimiento
+Reemplaza la del punto 5.5. Supabase → **Integrations → Cron → Create job**:
+
+- **Schedule:** `0 4 * * *`
+- **SQL:** `select public.mantenimiento_diario();`
+
+Borra las respuestas de más de 12 meses y los registros de más de 24 meses, y vence las aprobaciones viejas.
+
+### 6.6 Qué incluye
+- Descargar mis datos y eliminar mi cuenta, en Configuración.
+- Revocación de las comunicaciones por email.
+- Botón de arrepentimiento y baja sin login, con código de trámite al instante.
+- Página de precios con el IVA contenido discriminado.
+- Aviso de cookies, declaración de accesibilidad y nueva aceptación cuando cambian los textos.
 
 ---
 

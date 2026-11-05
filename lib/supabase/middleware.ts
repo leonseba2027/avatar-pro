@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const RUTAS_PUBLICAS = ["/login", "/recuperar", "/auth", "/privacidad", "/terminos", "/cookies", "/arrepentimiento", "/encuesta"];
+const RUTAS_PUBLICAS = ["/login", "/recuperar", "/auth", "/privacidad", "/terminos", "/cookies", "/arrepentimiento", "/encuesta", "/precios", "/accesibilidad", "/cuenta-eliminada", "/api/encuesta", "/api/tramite"];
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });

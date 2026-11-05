@@ -3,12 +3,12 @@ import { aceptarConsentimiento } from "./actions";
 
 export const metadata = { title: "Consentimiento" };
 
-export default async function Consentimiento({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
-  const { error } = await searchParams;
+export default async function Consentimiento({ searchParams }: { searchParams: Promise<{ error?: string; actualizado?: string }> }) {
+  const { error, actualizado } = await searchParams;
   return (
     <main id="contenido" className="mx-auto max-w-lg px-4 py-12">
       <h1 className="mb-2 text-2xl font-bold">Antes de seguir</h1>
-      <p className="mb-6 text-tenue">Necesitamos tu consentimiento para usar Avatar Pro. Podés revocarlo cuando quieras desde Configuración.</p>
+      <p className="mb-6 text-tenue">{actualizado ? "Actualizamos los Términos y la Política de Privacidad. Leelos y volvé a aceptarlos para seguir usando Avatar Pro." : "Necesitamos tu consentimiento para usar Avatar Pro. Podés revocarlo cuando quieras desde Configuración."}</p>
       <form action={aceptarConsentimiento} className="space-y-4">
         <fieldset className="space-y-3 rounded-xl border border-borde p-4">
           <legend className="px-1 text-sm font-semibold">Tu consentimiento</legend>

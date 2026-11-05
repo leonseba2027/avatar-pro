@@ -14,8 +14,8 @@ export function DonaGenero({ datos, alto = 150 }: { datos: { genero: string; por
     <div className="flex flex-wrap items-center gap-4">
       <div className="relative shrink-0" style={{ width: alto, height: alto }} aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie data={visibles} dataKey="porcentaje" nameKey="genero" innerRadius="62%" outerRadius="95%" stroke={t.superficie} strokeWidth={2} isAnimationActive={false} startAngle={90} endAngle={-270}>
+          <PieChart accessibilityLayer={false}>
+            <Pie rootTabIndex={-1} data={visibles} dataKey="porcentaje" nameKey="genero" innerRadius="62%" outerRadius="95%" stroke={t.superficie} strokeWidth={2} isAnimationActive={false} startAngle={90} endAngle={-270}>
               {visibles.map((d) => <Cell key={d.genero} fill={col[datos.findIndex((x) => x.genero === d.genero)]} />)}
             </Pie>
             <Tooltip formatter={(v, n) => [`${v}%`, NOMBRE[String(n)]]} contentStyle={{ background: t.superficie, border: `1px solid ${t.grilla}`, borderRadius: 12, color: t.primaria }} />

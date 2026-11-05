@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: { serverActions: { bodySizeLimit: "4.5mb" } },
   serverExternalPackages: ["unpdf"],
+  outputFileTracingIncludes: { "/*": ["./legales/**/*"] },
   async headers() {
     return [
       { source: "/(.*)", headers: securityHeaders },

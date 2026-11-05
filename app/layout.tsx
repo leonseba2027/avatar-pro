@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { RegistrarSW } from "@/components/RegistrarSW";
+import { AvisoCookies } from "@/components/AvisoCookies";
 
 export const metadata: Metadata = {
   title: { default: "Avatar Pro", template: "%s · Avatar Pro" },
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         {children}
         <RegistrarSW />
+        <AvisoCookies />
       </body>
     </html>
   );

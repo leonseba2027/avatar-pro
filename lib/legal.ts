@@ -1,6 +1,7 @@
 // Versión vigente de los textos legales. Cambiala cuando modifiques
 // Términos o Privacidad: los usuarios deberán aceptarlos de nuevo.
-export const VERSION_TEXTOS_LEGALES = "2026-11-borrador-1";
+export const VERSION_TEXTOS_LEGALES = "2026-11-borrador-2";
+export const FECHA_TEXTOS_LEGALES = "[COMPLETAR: fecha de publicación]";
 
 export const TITULAR = {
   nombre: "[COMPLETAR: nombre o razón social]",
