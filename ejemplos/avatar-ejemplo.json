@@ -1,0 +1,34 @@
+{
+  "nombre_ficticio": "Laura Méndez",
+  "resumen": "Profesional de 35-44 años que quiere dejar la relación de dependencia y vivir de su propio proyecto.",
+  "demografia": {
+    "edad": [{"rango":"18-24","porcentaje":5},{"rango":"25-34","porcentaje":30},{"rango":"35-44","porcentaje":40},{"rango":"45-54","porcentaje":18},{"rango":"55+","porcentaje":7}],
+    "genero": [{"genero":"mujer","porcentaje":62},{"genero":"hombre","porcentaje":36},{"genero":"otro","porcentaje":2}],
+    "ocupaciones": [{"nombre":"Profesional en relación de dependencia","porcentaje":40},{"nombre":"Freelancer","porcentaje":25},{"nombre":"Gerente de pyme","porcentaje":20},{"nombre":"Emprendedora inicial","porcentaje":15}],
+    "ingresos": [{"nivel":"bajo","porcentaje":15},{"nivel":"medio","porcentaje":60},{"nivel":"alto","porcentaje":25}],
+    "ubicaciones": [{"pais":"Argentina","ciudad":"Buenos Aires","porcentaje":40},{"pais":"Argentina","ciudad":"Córdoba","porcentaje":20},{"pais":"Argentina","ciudad":"Rosario","porcentaje":15},{"pais":"Argentina","ciudad":"Mendoza","porcentaje":10},{"pais":"Uruguay","ciudad":"Montevideo","porcentaje":8},{"pais":"Chile","ciudad":null,"porcentaje":7}],
+    "redes": [{"red":"instagram","porcentaje":85},{"red":"linkedin","porcentaje":60},{"red":"whatsapp","porcentaje":95},{"red":"youtube","porcentaje":45},{"red":"tiktok","porcentaje":30}]
+  },
+  "mundo_interno": {
+    "piensa": ["Trabajo mucho y no avanzo","Ya debería haber dado el salto","¿Y si no me alcanza la plata?","Necesito un plan concreto, no más motivación"],
+    "dice": ["Siento que trabajo 10 horas y no avanzo","¿Quién me va a pagar eso?","Ya gasté plata en cursos que no terminé","No tengo tiempo para nada"],
+    "ansiedades": [{"texto":"No tener tiempo para la familia","intensidad":8},{"texto":"Cobrar menos de lo que vale","intensidad":7},{"texto":"El qué dirán","intensidad":6}],
+    "miedos": [{"texto":"Perder el sueldo fijo","intensidad":9},{"texto":"Volver a fallar","intensidad":8},{"texto":"Invertir y no ver resultados","intensidad":7}],
+    "peor_escenario": "Renunciar, quedarse sin ahorros y tener que volver a buscar empleo."
+  },
+  "metas": {
+    "deseos": [{"texto":"Vivir de su propio proyecto","prioridad":10},{"texto":"Cobrar lo que vale","prioridad":8},{"texto":"Tener tiempo para su familia","prioridad":8}],
+    "le_exigen": ["Resultados rápidos","Estar siempre disponible","Crecer sin dejar de cumplir en casa"],
+    "le_falta": ["Un plan paso a paso","Confianza para poner precios","Tiempo organizado","Red de contactos"]
+  },
+  "emociones": {
+    "si_logra": [{"emocion":"Orgullo","descripcion":"Siente que se animó a lo que siempre quiso."},{"emocion":"Libertad","descripcion":"Maneja sus tiempos."},{"emocion":"Tranquilidad","descripcion":"Ingresos previsibles."}],
+    "si_no_logra": [{"emocion":"Frustración","descripcion":"Otro año más igual."},{"emocion":"Culpa","descripcion":"Por haber invertido sin resultados."},{"emocion":"Resignación","descripcion":"Cree que no es para ella."}]
+  },
+  "camino": {"hoy":"Empleada con sueldo fijo, agotada y sin tiempo.","falta":"Un plan concreto y confianza en su valor.","quiere_llegar":"Su propio proyecto rentable con tiempo libre."},
+  "marketing": {
+    "objeciones": ["Es caro","No tengo tiempo","Ya probé y no funcionó","¿Funciona online?","¿Qué pasa si no me sirve?"],
+    "palabras": ["plan concreto","paso a paso","libertad","resultados","sin humo","a tu ritmo","garantía"],
+    "ganchos": ["Dejá de trabajar 10 horas para el sueño de otro","El plan que te faltaba para animarte","Herramientas concretas cada semana, sin humo"]
+  }
+}

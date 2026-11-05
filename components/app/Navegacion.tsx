@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Layers, Settings, LogOut } from "lucide-react";
+import { Home, Layers, Settings, LogOut, Columns3 } from "lucide-react";
 
 const ITEMS = [
   { href: "/inicio", label: "Inicio", I: Home },
+  { href: "/comparar", label: "Comparar", I: Columns3 },
   { href: "/servicios", label: "Servicios", I: Layers },
   { href: "/configuracion", label: "Configuración", I: Settings },
 ];
@@ -33,7 +34,7 @@ export function Navegacion({ nombre }: { nombre: string }) {
         </form>
       </aside>
       {/* Barra inferior en celular */}
-      <nav aria-label="Principal" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-3 border-t border-borde bg-tarjeta pb-[env(safe-area-inset-bottom)] md:hidden">
+      <nav aria-label="Principal" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-borde bg-tarjeta pb-[env(safe-area-inset-bottom)] md:hidden">
         {ITEMS.map(({ href, label, I }) => (
           <Link key={href} href={href} aria-current={activo(href) ? "page" : undefined}
             className={`flex flex-col items-center gap-1 py-2.5 text-xs font-medium ${activo(href) ? "text-primario" : "text-tenue"}`}>

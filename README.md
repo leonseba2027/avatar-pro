@@ -2,7 +2,7 @@
 
 App web (PWA) para construir el **avatar de cliente ideal** de cada servicio que ofrecés. Funciona en celular y computadora y se puede instalar como app.
 
-> **Estado:** Etapa 1 (login y servicios) ✅ · Etapa 2 (generación de avatares) ✅
+> **Estado:** Etapa 1 (login y servicios) ✅ · Etapa 2 (generación de avatares) ✅ · Etapa 3 (gráficos y visualización) ✅
 
 ---
 
@@ -129,6 +129,22 @@ Cada análisis usa el texto cargado más el avatar actual. Con el modelo por def
 3. **Actualizar avatar** envía a Claude solo los datos nuevos más el avatar actual. **Regenerar desde cero** usa todos los datos.
 4. Cada análisis crea una versión nueva con la lista de cambios. Desde **Historial** podés restaurar cualquier versión anterior.
 5. El **nivel de confianza** (0–100) se calcula con la cantidad de datos, el volumen de texto, la variedad de tipos y lo recientes que son.
+
+---
+
+## Etapa 3 — Gráficos y visualización
+
+No requiere configuración nueva: se activa con el siguiente deploy.
+
+| Dónde | Qué ves |
+|---|---|
+| **Inicio** | Mini tarjeta por servicio y filtros por servicio, edad, género y país |
+| **Avatar → Datos demográficos** | Barras de edad, dona de género, ocupación, ranking de países y ciudades, barra de ingresos, redes con %, velocímetro de confianza |
+| **Avatar → Mundo interno** | Camino del avatar, frases en globos, miedos y ansiedades (1–10), deseos con prioridad, "si lo logra" vs. "si no lo logra", tarjetas por tema con "ver más" |
+| **Avatar → Exportar ficha** | Infografía de una página para descargar en PDF (A4) o imagen PNG |
+| **Comparar** | 2 o 3 avatares lado a lado con los mismos gráficos |
+
+Accesibilidad de los gráficos: cada uno tiene la opción "Ver como tabla", etiquetas con los valores (no dependen solo del color), paleta probada para daltonismo y versión propia para modo oscuro.
 
 ---
 

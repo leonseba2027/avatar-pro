@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Download } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Icono } from "@/components/Icono";
 import { Ilustracion } from "@/components/avatar/Ilustracion";
@@ -9,13 +9,14 @@ import type { DatosAvatar } from "@/lib/avatar/esquema";
 import { BotonGenerar } from "./BotonGenerar";
 import { Alimentar } from "./Alimentar";
 import { Historial } from "./Historial";
-import { Perfil } from "./Perfil";
+import { Demograficos } from "@/components/avatar/Demograficos";
+import { MundoInterno } from "@/components/avatar/MundoInterno";
 
-const TABS = [{ id: "perfil", nombre: "Perfil" }, { id: "alimentar", nombre: "Alimentar" }, { id: "historial", nombre: "Historial" }] as const;
+const TABS = [{ id: "demograficos", nombre: "Datos demográficos" }, { id: "mundo", nombre: "Mundo interno" }, { id: "alimentar", nombre: "Alimentar" }, { id: "historial", nombre: "Historial" }] as const;
 
 export default async function PaginaAvatar({ params, searchParams }: { params: Promise<{ servicioId: string }>; searchParams: Promise<{ tab?: string }> }) {
   const { servicioId } = await params;
-  const tab = (await searchParams).tab ?? "perfil";
+  const tab = (await searchParams).tab ?? "demograficos";
   const supabase = await createClient();
 
   const { data: servicio } = await supabase.from("servicios").select("id, nombre, color, icono").eq("id", servicioId).maybeSingle();
@@ -57,7 +58,10 @@ export default async function PaginaAvatar({ params, searchParams }: { params: P
         </p>
       )}
 
-      <div className="mb-6"><BotonGenerar servicioId={servicioId} existe={!!avatar} nuevos={nuevos} /></div>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+        <BotonGenerar servicioId={servicioId} existe={!!avatar} nuevos={nuevos} />
+        {avatar && <Link href={`/avatar/${servicioId}/infografia`} className="boton-secundario"><Download size={20} aria-hidden="true" /> Exportar ficha</Link>}
+      </div>
 
       <nav aria-label="Secciones del avatar" className="mb-6 flex gap-1 overflow-x-auto rounded-xl bg-suave p-1">
         {TABS.map((t) => (
@@ -70,7 +74,8 @@ export default async function PaginaAvatar({ params, searchParams }: { params: P
 
       {tab === "alimentar" ? <Alimentar servicioId={servicioId} fuentes={fuentes ?? []} />
         : tab === "historial" ? <Historial servicioId={servicioId} versiones={(versiones ?? []) as never} actual={avatar?.version_actual ?? 0} />
-        : avatar ? <Perfil d={avatar.datos as DatosAvatar} />
+        : avatar && tab === "mundo" ? <MundoInterno d={avatar.datos as DatosAvatar} color={servicio.color} />
+        : avatar ? <Demograficos d={avatar.datos as DatosAvatar} color={servicio.color} confianza={avatar.confianza} />
         : <p className="tarjeta text-tenue">Tocá “Generar avatar” para crear una primera hipótesis, o andá a “Alimentar” para cargar datos reales primero (recomendado).</p>}
     </div>
   );
