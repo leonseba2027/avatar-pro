@@ -5,7 +5,8 @@ PWA en español (Next.js 15 + TypeScript + Tailwind 4, Supabase, API de Claude, 
 ## Estado (noviembre 2026)
 - Código completo en `main`. Compila (`npx next build`) y la auditoría axe (WCAG 2.1 AA) da 0 problemas.
 - Migraciones probadas en un Postgres que imita Supabase (`supabase/migrations/0001`…`0005`, son idempotentes).
-- **Pendiente: publicar.** Todavía no existe el proyecto de Supabase ni el de Vercel del usuario.
+- Supabase: proyecto `avatar-pro` (ref `panfqrcbkmlawatudnwc`, región sa-east-1) creado con las migraciones 0001 a 0007 aplicadas.
+- Pendiente: proyecto de Vercel, plantillas de email y URL Configuration en Supabase.
 
 ## Próximos pasos (publicación)
 1. Supabase: crear el proyecto (región São Paulo) → correr las migraciones 0001 a 0005 en orden → plantillas de email (Confirm signup, Reset password, Magic Link con `{{ .Token }}`; ver README) → URL Configuration.
