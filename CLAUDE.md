@@ -6,7 +6,10 @@ PWA en español (Next.js 15 + TypeScript + Tailwind 4, Supabase, API de Claude, 
 - Código completo en `main`. Compila (`npx next build`) y la auditoría axe (WCAG 2.1 AA) da 0 problemas.
 - Migraciones probadas en un Postgres que imita Supabase (`supabase/migrations/0001`…`0005`, son idempotentes).
 - Supabase: proyecto `avatar-pro` (ref `panfqrcbkmlawatudnwc`, región sa-east-1) creado con las migraciones 0001 a 0007 aplicadas.
-- Pendiente: proyecto de Vercel, plantillas de email y URL Configuration en Supabase.
+- Plantillas de email de Supabase: cargadas por el usuario.
+- Vercel: proyecto `avatar-pro` (prj_Q3PYDl5TCJeyKMEqEocYhQZtHIje, team_EaEmUJD6SCrhOenVUQKu77mA), producción en https://avatar-pro-ten.vercel.app. **No está conectado a GitHub**: se publica desde la sesión con `npx vercel@48 deploy --prod --yes --token proxyinjected` (el token real lo inyecta el proxy del entorno Default para api.vercel.com).
+- Variables cargadas: SUPABASE_URL/ANON_KEY, SITE_URL, VAPID (pública, privada y subject), ADMIN_EMAILS.
+- Pendiente del usuario: SUPABASE_SERVICE_ROLE_KEY y ANTHROPIC_API_KEY en Vercel; URL Configuration en Supabase; revisar la Deployment Protection de Vercel.
 
 ## Próximos pasos (publicación)
 1. Supabase: crear el proyecto (región São Paulo) → correr las migraciones 0001 a 0005 en orden → plantillas de email (Confirm signup, Reset password, Magic Link con `{{ .Token }}`; ver README) → URL Configuration.
