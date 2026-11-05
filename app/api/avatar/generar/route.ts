@@ -2,13 +2,13 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { registrar } from "@/lib/auditoria";
-import { generarAvatar, mensajeError } from "@/lib/avatar/claude";
+import { generarAvatar, mensajeError, modeloPara } from "@/lib/avatar/claude";
 import { calcularConfianza } from "@/lib/avatar/confianza";
 import type { DatosAvatar } from "@/lib/avatar/esquema";
 
 export const maxDuration = 300; // la IA puede tardar 1–3 minutos
 
-const Cuerpo = z.object({ servicioId: z.string().uuid(), modo: z.enum(["actualizar", "regenerar"]) });
+const Cuerpo = z.object({ servicioId: z.string().uuid(), modo: z.enum(["actualizar", "regenerar"]), aprobacionId: z.string().uuid().optional() });
 const LIMITE_DIA = Number(process.env.LIMITE_GENERACIONES_DIA || 20);
 const MAX_TEXTO = 600_000; // caracteres enviados por análisis
 
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
   const p = Cuerpo.safeParse(await req.json().catch(() => null));
   if (!p.success) return NextResponse.json({ error: "Solicitud inválida." }, { status: 400 });
-  const { servicioId, modo } = p.data;
+  const { servicioId, modo, aprobacionId } = p.data;
 
   // Límite diario por usuario (controla costos)
   const desde = new Date(Date.now() - 864e5).toISOString();
@@ -35,6 +35,20 @@ export async function POST(req: NextRequest) {
     .select("id, tipo, contenido, caracteres, creado_at, usada_en_version").eq("servicio_id", servicioId).order("creado_at", { ascending: false });
   const fuentes = todas ?? [];
 
+  // Regenerar un avatar existente requiere una aprobación vigente (Etapa 4)
+  if (avatar && modo === "regenerar") {
+    if (!aprobacionId) return NextResponse.json({ error: "Regenerar requiere aprobación." }, { status: 403 });
+    const { data: reclamo } = await supabase.from("aprobaciones").update({ estado: "ejecutada" })
+      .eq("id", aprobacionId).eq("estado", "aprobada").eq("accion", "regenerar_avatar").eq("detalle->>servicioId", servicioId)
+      .select("id").maybeSingle();
+    if (!reclamo) return NextResponse.json({ error: "La aprobación no es válida o ya se usó." }, { status: 403 });
+  }
+  const marcarResultado = async (resultado: string, fallo = false) => {
+    if (avatar && modo === "regenerar" && aprobacionId)
+      await supabase.from("aprobaciones").update({ resultado, ...(fallo ? { estado: "fallida" } : {}) }).eq("id", aprobacionId);
+  };
+  const { data: perfil } = await supabase.from("perfiles").select("modelo_ia").eq("id", user.id).single();
+
   const desdeCero = !avatar || modo === "regenerar";
   let aEnviar = desdeCero ? fuentes : fuentes.filter((f) => f.usada_en_version === null);
   if (!desdeCero && aEnviar.length === 0) return NextResponse.json({ error: "No hay datos nuevos para analizar. Cargá información primero." }, { status: 400 });
@@ -45,6 +59,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const { avatar: nuevo, modelo } = await generarAvatar({
+      modelo: modeloPara(perfil?.modelo_ia),
       servicio,
       actual: desdeCero ? null : (avatar!.datos as DatosAvatar),
       fuentes: aEnviar.map((f) => ({ tipo: f.tipo, contenido: f.contenido })),
@@ -72,9 +87,11 @@ export async function POST(req: NextRequest) {
     if (aEnviar.length) await supabase.from("fuentes_datos").update({ usada_en_version: version }).in("id", aEnviar.map((f) => f.id));
     await registrar(supabase, user.id, "avatar.generado", { servicioId, version, modo, fuentes: aEnviar.length, modelo });
 
+    await marcarResultado(`Avatar regenerado (versión ${version}).`);
     return NextResponse.json({ ok: true, version, cambios, confianza, recortado: aEnviar.length < (desdeCero ? fuentes.length : fuentes.filter((f) => f.usada_en_version === null).length) });
   } catch (e) {
     console.error("generar avatar", e);
+    await marcarResultado(mensajeError(e), true);
     return NextResponse.json({ error: mensajeError(e) }, { status: 502 });
   }
 }

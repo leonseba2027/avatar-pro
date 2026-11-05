@@ -39,13 +39,3 @@ export async function guardarServicio(id: string | null, datos: unknown): Promis
   revalidatePath("/servicios"); revalidatePath("/inicio");
   return { ok: true };
 }
-
-// Etapa 4: esta acción pasará a requerir aprobación desde otro dispositivo.
-export async function eliminarServicio(id: string): Promise<Resultado> {
-  const { supabase, user } = await usuario();
-  const { data, error } = await supabase.from("servicios").delete().eq("id", id).select("nombre").single();
-  if (error) return { ok: false, error: "No se pudo eliminar." };
-  await registrar(supabase, user.id, "servicio.eliminado", { id, nombre: data.nombre });
-  revalidatePath("/servicios"); revalidatePath("/inicio");
-  return { ok: true };
-}

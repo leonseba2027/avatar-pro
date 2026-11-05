@@ -2,7 +2,7 @@
 
 App web (PWA) para construir el **avatar de cliente ideal** de cada servicio que ofrecés. Funciona en celular y computadora y se puede instalar como app.
 
-> **Estado:** Etapa 1 (login y servicios) ✅ · Etapa 2 (generación de avatares) ✅ · Etapa 3 (gráficos y visualización) ✅
+> **Estado:** Etapa 1 (login y servicios) ✅ · Etapa 2 (generación de avatares) ✅ · Etapa 3 (gráficos y visualización) ✅ · Etapa 4 (sincronización y permisos) ✅
 
 ---
 
@@ -145,6 +145,40 @@ No requiere configuración nueva: se activa con el siguiente deploy.
 | **Comparar** | 2 o 3 avatares lado a lado con los mismos gráficos |
 
 Accesibilidad de los gráficos: cada uno tiene la opción "Ver como tabla", etiquetas con los valores (no dependen solo del color), paleta probada para daltonismo y versión propia para modo oscuro.
+
+---
+
+## Etapa 4 — Sincronización entre dispositivos y aprobaciones
+
+### 4.a Tablas nuevas
+**SQL Editor → New query** → pegá todo `supabase/migrations/0003_dispositivos_aprobaciones.sql` → **Run**. Ese script también activa el tiempo real en las tablas necesarias.
+
+Verificalo en **Database → Publications → supabase_realtime**: tienen que figurar `servicios`, `avatares`, `fuentes_datos`, `aprobaciones` y `dispositivos`.
+
+### 4.b Email con código (para quien tiene un solo dispositivo)
+**Authentication → Emails → Magic Link**: reemplazá el cuerpo por:
+
+```html
+<h2>Tu código de Avatar Pro</h2>
+<p>Usá este código para confirmar la acción: <strong style="font-size:24px">{{ .Token }}</strong></p>
+<p>Vence en pocos minutos. Si no pediste nada, ignorá este email.</p>
+```
+
+### 4.c Emails en producción (importante)
+El email incluido en Supabase permite **muy pocos envíos por hora** y es solo para pruebas. Antes de abrir la app a clientes, configurá un servicio de email propio:
+
+1. Creá una cuenta en <https://resend.com> (gratis hasta 3.000 emails por mes).
+2. Verificá tu dominio.
+3. En Supabase: **Authentication → Emails → SMTP Settings** → completá los datos que te da Resend.
+
+### 4.d Cómo funciona
+- **Sincronización:** lo que cambies en un dispositivo aparece solo en los demás, sin recargar.
+- **Acciones que piden aprobación:** eliminar un servicio, eliminar o regenerar un avatar, publicar la encuesta y cambiar la configuración de IA.
+  - Si tenés **otro dispositivo conectado**, ahí aparece la ventana **Aprobar / Rechazar**. La solicitud vence a los 15 minutos.
+  - Si tenés **un solo dispositivo**, te llega un **código por email** para confirmar.
+  - La aprobación siempre tiene que venir de *otra* sesión, nunca de la misma que la pidió.
+- **Dispositivos** (Configuración → Dispositivos conectados): cada inicio de sesión es un dispositivo. **Desconectar** cierra esa sesión al instante y la obliga a volver a ingresar.
+- **Historial:** todas las solicitudes quedan en Configuración → Historial de aprobaciones, y también en el registro de actividad.
 
 ---
 

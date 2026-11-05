@@ -1,7 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { RefreshCw, Sparkles } from "lucide-react";
+import { RefreshCw, Sparkles, Trash2 } from "lucide-react";
+import { usePedirAprobacion } from "@/components/sync/Sincronizacion";
 
 const PASOS = ["Leyendo tus datos…", "Buscando patrones…", "Armando el mundo interno…", "Calculando la demografía…", "Revisando los cambios…"];
 
@@ -9,6 +10,7 @@ export function BotonGenerar({ servicioId, existe, nuevos }: { servicioId: strin
   const router = useRouter();
   const [cargando, setCargando] = useState<null | "actualizar" | "regenerar">(null);
   const [paso, setPaso] = useState(0);
+  const pedirAprobacion = usePedirAprobacion();
   const [msg, setMsg] = useState<{ ok: boolean; texto: string; cambios?: string[] } | null>(null);
 
   useEffect(() => {
@@ -18,7 +20,11 @@ export function BotonGenerar({ servicioId, existe, nuevos }: { servicioId: strin
   }, [cargando]);
 
   async function generar(modo: "actualizar" | "regenerar") {
-    if (modo === "regenerar" && !confirm("Se va a reconstruir el avatar desde cero con todos los datos. La versión actual queda en el historial. ¿Continuar?")) return;
+    if (modo === "regenerar") {
+      if (confirm("Se va a reconstruir el avatar desde cero con todos los datos (la versión actual queda en el historial). Requiere aprobación. ¿Continuar?"))
+        pedirAprobacion("regenerar_avatar", { servicioId });
+      return;
+    }
     setCargando(modo); setPaso(0); setMsg(null);
     try {
       const r = await fetch("/api/avatar/generar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ servicioId, modo }) });
@@ -40,7 +46,13 @@ export function BotonGenerar({ servicioId, existe, nuevos }: { servicioId: strin
         </button>
         {existe && (
           <button onClick={() => generar("regenerar")} disabled={!!cargando} className="boton-secundario">
-            <RefreshCw size={20} aria-hidden="true" /> {cargando === "regenerar" ? "Regenerando…" : "Regenerar desde cero"}
+            <RefreshCw size={20} aria-hidden="true" /> Regenerar desde cero
+          </button>
+        )}
+        {existe && (
+          <button onClick={() => confirm("¿Eliminar este avatar y su historial? Los datos cargados se conservan. Requiere aprobación.") && pedirAprobacion("eliminar_avatar", { servicioId })}
+            disabled={!!cargando} className="boton-secundario text-peligro">
+            <Trash2 size={20} aria-hidden="true" /> Eliminar avatar
           </button>
         )}
       </div>

@@ -3,7 +3,8 @@ import { useRef, useState, useTransition } from "react";
 import { Pencil, Plus, Trash2, Check } from "lucide-react";
 import { Icono } from "@/components/Icono";
 import { COLORES, ICONOS, type Servicio } from "@/lib/servicios";
-import { eliminarServicio, guardarServicio } from "./actions";
+import { guardarServicio } from "./actions";
+import { usePedirAprobacion } from "@/components/sync/Sincronizacion";
 
 type Borrador = { id: string | null; nombre: string; descripcion: string; color: string; icono: string };
 const VACIO: Borrador = { id: null, nombre: "", descripcion: "", color: COLORES[0].valor, icono: "sparkles" };
@@ -16,6 +17,7 @@ export function GestorServicios({ servicios }: { servicios: Servicio[] }) {
   const [error, setError] = useState("");
   const [aviso, setAviso] = useState("");
   const [pendiente, start] = useTransition();
+  const pedirAprobacion = usePedirAprobacion();
 
   const abrir = (s?: Servicio) => {
     setError("");
@@ -35,11 +37,8 @@ export function GestorServicios({ servicios }: { servicios: Servicio[] }) {
 
   const borrar = () => {
     if (!aBorrar) return;
-    start(async () => {
-      const r = await eliminarServicio(aBorrar.id);
-      confirmar.current?.close();
-      setAviso(r.ok ? `Servicio "${aBorrar.nombre}" eliminado.` : r.error ?? "Error");
-    });
+    confirmar.current?.close();
+    pedirAprobacion("eliminar_servicio", { servicioId: aBorrar.id });
   };
 
   return (
@@ -120,10 +119,10 @@ export function GestorServicios({ servicios }: { servicios: Servicio[] }) {
 
       <dialog ref={confirmar} aria-labelledby="titulo-borrar" className="m-auto w-[min(100%-2rem,28rem)] rounded-2xl bg-tarjeta p-6 text-texto backdrop:bg-black/50">
         <h2 id="titulo-borrar" className="mb-2 text-xl font-bold">¿Eliminar &quot;{aBorrar?.nombre}&quot;?</h2>
-        <p className="mb-6 text-tenue">Se borrará el servicio y, más adelante, su avatar y todos sus datos. No se puede deshacer.</p>
+        <p className="mb-6 text-tenue">Se borrará el servicio, su avatar y todos sus datos. No se puede deshacer. Por seguridad vas a tener que aprobarlo desde otro dispositivo o con un código por email.</p>
         <div className="flex justify-end gap-3">
           <button onClick={() => confirmar.current?.close()} className="boton-secundario">Cancelar</button>
-          <button onClick={borrar} disabled={pendiente} className="boton bg-peligro text-white">Eliminar</button>
+          <button onClick={borrar} className="boton bg-peligro text-white">Pedir aprobación</button>
         </div>
       </dialog>
     </div>

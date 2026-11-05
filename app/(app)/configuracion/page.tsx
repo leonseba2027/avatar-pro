@@ -1,5 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
+import { ChevronRight, ShieldCheck, Smartphone } from "lucide-react";
 import { TemaToggle } from "@/components/TemaToggle";
+import { PreferenciasIA } from "./PreferenciasIA";
 
 export const metadata = { title: "Configuración" };
 
@@ -15,6 +18,19 @@ export default async function Configuracion() {
       <section className="tarjeta space-y-3" aria-labelledby="t-apariencia">
         <h2 id="t-apariencia" className="text-xl font-semibold">Apariencia</h2>
         <TemaToggle />
+      </section>
+      <section className="tarjeta" aria-labelledby="t-seg">
+        <h2 id="t-seg" className="mb-2 text-xl font-semibold">Seguridad</h2>
+        <ul className="divide-y divide-borde">
+          {[["/dispositivos", "Dispositivos conectados", Smartphone], ["/aprobaciones", "Historial de aprobaciones", ShieldCheck]].map(([href, t, I]) => {
+            const Ic = I as typeof Smartphone;
+            return <li key={href as string}><Link href={href as string} className="flex items-center gap-3 py-3 hover:underline"><Ic size={20} aria-hidden="true" /> {t as string}<ChevronRight size={18} className="ml-auto" aria-hidden="true" /></Link></li>;
+          })}
+        </ul>
+      </section>
+      <section className="tarjeta" aria-labelledby="t-ia">
+        <h2 id="t-ia" className="mb-3 text-xl font-semibold">Inteligencia artificial</h2>
+        <PreferenciasIA modelo={perfil?.modelo_ia ?? "opus"} reanalisis={perfil?.reanalisis_cada ?? 5} />
       </section>
       <section className="tarjeta space-y-2" aria-labelledby="t-cuenta">
         <h2 id="t-cuenta" className="text-xl font-semibold">Cuenta</h2>

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Consentimientos, consentCompleto, type Consent } from "@/components/auth/Consentimientos";
 import { VERSION_TEXTOS_LEGALES } from "@/lib/legal";
@@ -10,7 +10,12 @@ import { PieLegal } from "@/components/PieLegal";
 const sitio = () => process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
 
 export default function Login() {
+  return <Suspense><LoginForm /></Suspense>;
+}
+
+function LoginForm() {
   const router = useRouter();
+  const desconectado = useSearchParams().get("desconectado");
   const supabase = createClient();
   const [modo, setModo] = useState<"ingresar" | "registro">("ingresar");
   const [nombre, setNombre] = useState("");
@@ -70,6 +75,7 @@ export default function Login() {
         <p className="mt-1 text-tenue">Conocé a tu cliente ideal, servicio por servicio.</p>
       </div>
 
+      {desconectado && <p role="status" className="mb-4 rounded-xl bg-amber-100 p-3 text-sm text-amber-950 dark:bg-amber-950 dark:text-amber-100">Este dispositivo fue desconectado. Volvé a ingresar si querés usarlo.</p>}
       <div role="tablist" aria-label="Acceso" className="mb-6 grid grid-cols-2 rounded-xl bg-suave p-1">
         {(["ingresar", "registro"] as const).map((m) => (
           <button key={m} role="tab" aria-selected={modo === m} onClick={() => { setModo(m); setMensaje(null); }}
